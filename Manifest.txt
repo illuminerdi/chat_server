@@ -1,0 +1,7 @@
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/chat_server
+lib/chat_server.rb
+test/test_chat_server.rb
