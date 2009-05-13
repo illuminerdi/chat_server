@@ -1,32 +1,40 @@
 = ChatServer
 
-* FIX (url)
+* http://github.com/illuminerdi/chat_server
 
 == DESCRIPTION:
 
-FIX (describe your package)
+A simple Ruby Network chat server that handles unique users and rooms.
 
 == FEATURES/PROBLEMS:
 
-* FIX (list of features or problems)
+* drb-based centralized chat server & client
+* port 31337
+* multiple users, nick
+* multiple channels
+* join/leave
+* no protocol otherwise
+* client does no authentication, just connects.
+* server announces connection, etc.
+* protocol is objects, not text.
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+  NYI
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+* ruby 1.8.6
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+* NYI
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2009 FIX
+Copyright (c) 2009 Joshua Clingenpeel
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
