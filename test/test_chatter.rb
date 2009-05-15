@@ -16,10 +16,10 @@ module Kernel
   end
 end
 
-class TestChatServer < Test::Unit::TestCase
+class TestChatter < Test::Unit::TestCase
   def setup
-    @client = ChatClient.new("joshua")
-    @server = ChatServer.new
+    @client = Chatter::Client.new("joshua")
+    @server = Chatter::Server.new
   end
   
   def test_new_client_created
@@ -28,12 +28,12 @@ class TestChatServer < Test::Unit::TestCase
   end
   
   def test_new_client_created_into_custom_channel
-    client = ChatClient.new("joshua", "ruby")
+    client = Chatter::Client.new("joshua", "ruby")
     assert_equal "ruby", client.channel
   end
   
   def test_client_can_has_update
-    other = ChatClient.new("fubar")
+    other = Chatter::Client.new("fubar")
     actual = capture_stdout do
       @client.update(other,"this is a test message")
     end
@@ -48,7 +48,7 @@ class TestChatServer < Test::Unit::TestCase
   end
   
   def test_client_can_has_no_update_outside_of_channel
-    other = ChatClient.new("fubar", "ruby")
+    other = Chatter::Client.new("fubar", "ruby")
     actual = @client.update(other,"you should not see this message")
     assert actual.nil?
   end
@@ -76,20 +76,20 @@ class TestChatServer < Test::Unit::TestCase
     end
   end
   
-  def test_server_has_general_channel
-    assert_equal "general", ChatServer.channels.first
+  def test_server_has_no_channels_at_start
+    assert_equal [], @server.channels
   end
   
   def test_server_tracks_new_channel
-    ChatServer.add_channel "ruby"
-    assert ChatServer.channels.include?("ruby")
+    @server.add_channel "ruby"
+    assert @server.channels.include?("ruby")
   end
   
   def test_server_does_not_duplicate_channel
-    ChatServer.add_channel "ruby"
-    ChatServer.add_channel "ruby"
-    ChatServer.add_channel "fubar"
-    assert_equal 3, ChatServer.channels.size
+    @server.add_channel "ruby"
+    @server.add_channel "ruby"
+    @server.add_channel "fubar"
+    assert_equal 2, @server.channels.size
   end
   
   def test_server_has_broadcast
