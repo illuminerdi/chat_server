@@ -20,7 +20,16 @@ A simple Ruby Network chat server that handles unique users and rooms.
 
 == SYNOPSIS:
 
-  NYI
+  Protocol is objects, so presuming there is a DRb ChatServer available, you just create a new ChatClient and start chatting. This is a pretty bare-bones implementation, no authentication, no advanced controls. Here's a sample:
+  
+  >> me = ChatClient.new("joshua")
+  >> me.channel
+  =>> "general"
+  >> me.chat("Hello, World.")
+  =>> "[general]joshua: Hello, World."
+  >> me.join("ruby")
+  >> me.chat("Hello, Ruby World.")
+  =>> "[ruby]joshua: Hello, Ruby World."
 
 == REQUIREMENTS:
 
