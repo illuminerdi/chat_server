@@ -25,8 +25,7 @@ class ChatServer
   end
   
   def self.add_channel(channel)
-    @@channels << channel
-    @@channels.uniq!
+    @@channels << channel unless @@channels.include?(channel)
   end
   
   def broadcast(who, msg)
