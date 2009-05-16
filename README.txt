@@ -4,7 +4,7 @@
 
 == DESCRIPTION:
 
-A simple Ruby Network chat server that handles unique users and rooms.
+A simple DRb chat server that handles users and rooms.
 
 == FEATURES/PROBLEMS:
 
@@ -20,16 +20,14 @@ A simple Ruby Network chat server that handles unique users and rooms.
 
 == SYNOPSIS:
 
-  Protocol is objects, so presuming there is a DRb ChatServer available, you just create a new ChatClient and start chatting. This is a pretty bare-bones implementation, no authentication, no advanced controls. Here's a sample:
-  
-  >> me = ChatClient.new("joshua")
-  >> me.channel
-  =>> "general"
-  >> me.chat("Hello, World.")
-  =>> "[general]joshua: Hello, World."
-  >> me.join("ruby")
-  >> me.chat("Hello, Ruby World.")
-  =>> "[ruby]joshua: Hello, Ruby World."
+  Presuming there is a DRb Chatter::Server available, you just create a run Chatter::Client#connect(name). This is a pretty bare-bones implementation, no authentication, no advanced controls. Here's a sample:
+
+  # server:
+  $ bin/chatter server
+
+  # client:
+  $ bin/chatter client joshua
+  # start chatting!
 
 == REQUIREMENTS:
 
@@ -37,7 +35,7 @@ A simple Ruby Network chat server that handles unique users and rooms.
 
 == INSTALL:
 
-* NYI
+* download, use.
 
 == LICENSE:
 

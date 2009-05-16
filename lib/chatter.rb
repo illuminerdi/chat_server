@@ -7,44 +7,42 @@ module Chatter
   VERSION = '1.0.0'
   SERVER = 'localhost'
   PORT = '31337'
-  
+
   class Server
     include DRb::DRbObservable
     attr_reader :connection, :channels
-    
-    def initialize(server=SERVER, port=PORT)
+
+    def initialize(server, port)
       @connection = "druby://#{server}:#{port}"
       @channels = []
     end
-    
-    def self.run
-      cs = Chatter::Server.new
-      trap("INT"){ cs.broadcast(nil, "Shutting down the chat server..."); DRb.thread.kill; }
+
+    def self.run(server=SERVER, port=PORT)
+      cs = Chatter::Server.new(server, port)
       DRb.start_service(cs.connection, cs)
       DRb.thread.join
     end
-    
+
     def add_channel(channel)
       @channels << channel unless @channels.include?(channel)
     end
-    
+
     def broadcast(who, msg)
       changed(true)
       notify_observers(who, msg)
     end
   end
-  
+
   class Client
     include DRbUndumped
     attr_reader :name, :channel, :service
     HOME = "general"
-    
+
     def initialize(name, service)
       @name = name
       @channel = HOME
       @service = service
       service.add_observer(self)
-      puts "Welcome to Chatter!"
     end
 
     def self.connect(name, server=SERVER, port=PORT)

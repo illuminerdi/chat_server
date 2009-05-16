@@ -1,0 +1,13 @@
+#! /usr/bin/env ruby -w
+
+$: << 'lib'
+require 'chatter'
+
+action = ARGV.shift
+
+case action
+  when "client"
+    Chatter::Client.connect ARGV.shift
+  when "server"
+    Chatter::Server.run
+end
