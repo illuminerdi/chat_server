@@ -17,19 +17,11 @@ module Chatter
       @channels = []
     end
     
-    def self.channels
-      @@channels
-    end
-    
     def self.run
       cs = Chatter::Server.new
       trap("INT"){ cs.broadcast(nil, "Shutting down the chat server..."); DRb.thread.kill; }
       DRb.start_service(cs.connection, cs)
       DRb.thread.join
-    end
-    
-    def self.add_channel(channel)
-      @@channels << channel unless @@channels.include?(channel)
     end
     
     def add_channel(channel)
@@ -39,15 +31,6 @@ module Chatter
     def broadcast(who, msg)
       changed(true)
       notify_observers(who, msg)
-    end
-    
-    def join(who)
-      self.add_channel(who.channel)
-      broadcast(nil, "#{who.name} joined #{who.channel}")
-    end
-
-    def leave(who)
-      broadcast(nil, "#{who.name} left #{who.channel}")
     end
   end
   
@@ -61,7 +44,7 @@ module Chatter
       @channel = HOME
       @service = service
       service.add_observer(self)
-      self.join(@channel)
+      puts "Welcome to Chatter!"
     end
 
     def self.connect(name, server=SERVER, port=PORT)
@@ -72,27 +55,23 @@ module Chatter
     end
 
     def join(channel)
+      @service.broadcast self, "left #{@channel}"
       @channel = channel
-      @service.broadcast self, "joined #{@channel}" if defined? @service
+      @service.broadcast self, "joined #{@channel}"
       puts "You joined the #{@channel} channel"
     end
 
-    def leave
-      @service.broadcast self, "left #{@channel}" if defined? @service
-      self.join(HOME)
-    end
-
     def update(who, msg)
-      if who
-        puts "[#{who.channel}]#{who.name}: #{msg}" if who != self and who.channel == self.channel
-      else  
-        puts "#{msg}"
-      end
+      puts "[#{who.channel}]#{who.name}: #{msg}" if who != self and who.channel == self.channel
     end
 
     def speak
       while speaking = STDIN.gets
-        @service.broadcast(self, speaking.chomp) if defined? @service
+        if speaking =~ /^\/join\s(\S+)/
+          join $1
+          next
+        end
+        @service.broadcast(self, speaking.chomp)
       end
     end
   end

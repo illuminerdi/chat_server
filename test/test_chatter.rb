@@ -39,9 +39,9 @@ class TestChatter < Test::Unit::TestCase
   
   def test_client_can_has_server_update
     actual = capture_stdout do
-      @client.update(nil, "This is a server message.")
+      @client.join "ruby"
     end
-    assert_equal "This is a server message.", actual.string.chomp
+    assert_equal "You joined the ruby channel", actual.string.chomp
   end
   
   def test_client_can_has_no_update_outside_of_channel
@@ -61,16 +61,12 @@ class TestChatter < Test::Unit::TestCase
   end
   
   def test_client_can_leave_channel
-    capture_stdout do
+    actual = capture_stdout do
       @client.join("ruby")
-      @client.leave
+      @client.join("general")
     end
-    assert_equal "general", @client.channel
-  end
-  
-  def test_client_can_not_leave_general
-    capture_stdout do
-      @client.leave
+    actual.string.split("\n").each do |line|
+      assert_match /You joined the (ruby|general) channel/, line
     end
     assert_equal "general", @client.channel
   end
@@ -94,12 +90,24 @@ class TestChatter < Test::Unit::TestCase
   def test_server_has_broadcast
     assert @server.respond_to?(:broadcast)
   end
-  
-  def test_server_has_join
-    assert @server.respond_to?(:join)
+
+  def test_basic_conversation
+    actual = capture_stdout do
+      other = Chatter::Client.new("fubar", @server)
+      @server.broadcast other, "Hello"
+      @server.broadcast @client, "Hey there!"
+      other.join "ruby"
+    end
+    expected = "Welcome to Chatter!\n[general]fubar: Hello\n[general]joshua: Hey there!\n[general]fubar: left general\nYou joined the ruby channel"
+    assert_equal expected, actual.string.chomp
   end
   
-  def test_server_has_leave
-    assert @server.respond_to?(:leave)
+  def test_person_leaves_and_broadcasts_other_does_not_receive
+    actual = capture_stdout do
+      other = Chatter::Client.new("fubar", @server)
+      @client.join "ruby"
+      @server.broadcast other, "H... Hello?"
+    end
+    assert !actual.string.match("H... Hello?")
   end
 end
