@@ -34,7 +34,7 @@ class TestChatter < Test::Unit::TestCase
       other = Chatter::Client.new("fubar", @server)
       @client.update(other,"this is a test message")
     end
-    assert_match /\[general\]fubar: this is a test message/, actual.string.chomp
+    assert_match(/\[general\]fubar: this is a test message/, actual.string.chomp)
   end
 
   def test_client_can_has_server_update
@@ -66,7 +66,7 @@ class TestChatter < Test::Unit::TestCase
       @client.join("general")
     end
     actual.string.split("\n").each do |line|
-      assert_match /You joined the (ruby|general) channel/, line
+      assert_match(/You joined the (ruby|general) channel/, line)
     end
     assert_equal "general", @client.channel
   end

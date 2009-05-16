@@ -12,7 +12,7 @@ module Chatter
     include DRb::DRbObservable
     attr_reader :connection, :channels
 
-    def initialize(server, port)
+    def initialize(server=SERVER, port=PORT)
       @connection = "druby://#{server}:#{port}"
       @channels = []
     end
