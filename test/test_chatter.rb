@@ -1,7 +1,7 @@
 #! /usr/bin/env ruby -w
 
 require 'test/unit'
-require 'chat_server'
+require 'chatter'
 require 'rubygems'
 require 'flexmock/test_unit'
 require 'stringio'
@@ -18,8 +18,10 @@ end
 
 class TestChatter < Test::Unit::TestCase
   def setup
-    @client = Chatter::Client.new("joshua")
     @server = Chatter::Server.new
+    capture_stdout do
+      @client = Chatter::Client.new("joshua", @server)
+    end
   end
   
   def test_new_client_created
@@ -27,17 +29,12 @@ class TestChatter < Test::Unit::TestCase
     assert_equal "general", @client.channel
   end
   
-  def test_new_client_created_into_custom_channel
-    client = Chatter::Client.new("joshua", "ruby")
-    assert_equal "ruby", client.channel
-  end
-  
   def test_client_can_has_update
-    other = Chatter::Client.new("fubar")
     actual = capture_stdout do
+      other = Chatter::Client.new("fubar", @server)
       @client.update(other,"this is a test message")
     end
-    assert_equal "[general]fubar: this is a test message", actual.string.chomp
+    assert_match /\[general\]fubar: this is a test message/, actual.string.chomp
   end
   
   def test_client_can_has_server_update
@@ -48,32 +45,34 @@ class TestChatter < Test::Unit::TestCase
   end
   
   def test_client_can_has_no_update_outside_of_channel
-    other = Chatter::Client.new("fubar", "ruby")
-    actual = @client.update(other,"you should not see this message")
-    assert actual.nil?
+    actual = capture_stdout do
+      other = Chatter::Client.new("fubar", @server)
+      other.join "ruby"
+      @client.update(other,"you should not see this message")
+    end
+    assert !actual.string.match(/you should not see this message/)
   end
   
   def test_client_can_change_channel
-    @client.join("ruby")
+    capture_stdout do
+      @client.join("ruby")
+    end
     assert_equal "ruby", @client.channel
   end
   
   def test_client_can_leave_channel
-    @client.join("ruby")
-    @client.leave
+    capture_stdout do
+      @client.join("ruby")
+      @client.leave
+    end
     assert_equal "general", @client.channel
   end
   
   def test_client_can_not_leave_general
-    @client.leave
-    assert_equal "general", @client.channel
-  end
-  
-  def test_client_can_speak
-    assert @client.respond_to?(:say)
-    assert_nothing_raised do
-      @client.say("Hello, World.")
+    capture_stdout do
+      @client.leave
     end
+    assert_equal "general", @client.channel
   end
   
   def test_server_has_no_channels_at_start

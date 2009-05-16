@@ -2,7 +2,6 @@ History.txt
 Manifest.txt
 README.txt
 Rakefile
-bin/chat_server
-lib/chat_server.rb
-lib/chat_client.rb
-test/test_chat_server.rb
+bin/chatter
+lib/chatter.rb
+test/test_chatter.rb
